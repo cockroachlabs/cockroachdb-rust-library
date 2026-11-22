@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["summary","summary_query"],"struct":["TableStorage"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["new"],"struct":["AegisConfig","AppEvent","Finding","Recommendation","Simulated"],"trait":["Aegis"]};

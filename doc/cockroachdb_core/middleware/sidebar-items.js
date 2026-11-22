@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["chain"],"type":["BoxError","BoxFuture","Middleware","TxFn"]};

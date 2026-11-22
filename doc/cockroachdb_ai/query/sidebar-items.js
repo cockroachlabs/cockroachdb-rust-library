@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["create_table","create_vector_index","ident","insert","search","vector_literal"]};

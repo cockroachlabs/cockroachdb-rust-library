@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Health"],"fn":["health_status"],"struct":["HealthStatus"],"trait":["HealthChecker"],"type":["BoxError"]};

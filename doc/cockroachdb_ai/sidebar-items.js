@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AiError","DistanceMetric"],"fn":["rag_context"],"mod":["query"],"struct":["SearchResult","VectorConfig","VectorStore"],"trait":["Embedder"],"type":["BoxError"]};

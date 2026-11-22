@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CdcError","Operation"],"struct":["CdcMetrics","CdcSnapshot","ChangefeedSpec","ChangefeedSpecBuilder","Envelope","Outcome","Payload","WebhookSink"],"trait":["EventHandler"],"type":["BoxError"]};

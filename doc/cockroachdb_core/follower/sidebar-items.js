@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["FollowerError"],"fn":["as_of_system_time","follower_read_clause","follower_read_timestamp","follower_read_with_staleness"]};

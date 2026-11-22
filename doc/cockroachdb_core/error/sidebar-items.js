@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["SQLSTATE_DEADLOCK","SQLSTATE_SERIALIZATION_FAILURE"],"fn":["is_retryable","is_retryable_code","is_serialization_failure","retryable_in_chain"],"trait":["SqlState"]};

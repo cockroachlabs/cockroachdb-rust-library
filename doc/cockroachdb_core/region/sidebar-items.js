@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CRDB_REGION_COLUMN"],"struct":["RegionContext","StaticRegionResolver"],"trait":["RegionResolver"]};

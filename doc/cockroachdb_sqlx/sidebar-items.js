@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["is_retryable","sql_state"],"macro":[["follower_read",1],["transactional",1]],"struct":["ExecuteTxOptions","Pool"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CbError","State"],"struct":["CircuitBreaker","CircuitBreakerBuilder","CircuitBreakerOpenError"],"type":["StateChangeFn"]};

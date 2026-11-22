@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["InMemoryRecorder","Snapshot"],"trait":["MetricsRecorder","Snapshotter"]};

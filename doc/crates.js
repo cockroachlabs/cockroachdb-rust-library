@@ -1,0 +1,2 @@
+window.ALL_CRATES = ["cockroachdb_ai","cockroachdb_cdc","cockroachdb_continuum","cockroachdb_core","cockroachdb_macros","cockroachdb_seaorm","cockroachdb_sqlx","cockroachdb_testing","ideas_board"];
+//{"start":21,"fragment_lengths":[16,18,24,19,21,21,19,22,14]}
