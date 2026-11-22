@@ -53,4 +53,7 @@ jobs:
       - name: Run ignored (DB-backed) tests
         env:
           CRDB_URL: postgres://root@localhost:26257/defaultdb?sslmode=disable
-        run: cargo test --workspace -- --ignored
+        # --tests runs only unit/integration test targets (not doctests): `cargo
+        # test -- --ignored` would otherwise execute ````ignore` doctests, which
+        # are meant to be skipped.
+        run: cargo test --workspace --tests -- --ignored
