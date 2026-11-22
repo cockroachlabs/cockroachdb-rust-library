@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["live_demo","main","offline_demos"],"mod":["service"]};
+window.SIDEBAR_ITEMS = {"fn":["live_demo","main","offline_demos","run_concurrent_upvotes"],"mod":["idea","service"]};
