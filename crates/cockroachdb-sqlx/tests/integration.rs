@@ -50,7 +50,7 @@ async fn execute_tx_commits_and_metrics_record() {
 
 #[tokio::test]
 #[ignore = "requires a live CockroachDB cluster (set CRDB_URL)"]
-async fn follower_read_returns_rows() {
+async fn follower_read_catches_up_to_seeded_row() {
     let pool = Pool::connect(&dsn(), Config::default())
         .await
         .expect("connect");
@@ -68,12 +68,28 @@ async fn follower_read_returns_rows() {
     .await
     .expect("seed");
 
-    // A fixed staleness keeps the read in the safe follower window.
-    let rows = pool
-        .fetch_all_follower_read_as(Duration::from_secs(5), "SELECT id FROM rust_fr")
-        .await
-        .expect("follower read");
-    assert!(!rows.is_empty());
+    // Follower reads are ~4.8s stale, so a freshly-seeded row is invisible until
+    // the staleness window passes. Poll until it appears (mirrors the Go sibling's
+    // awaitTopIdeas), tolerating transient "as of a time before the table existed"
+    // errors while the window advances.
+    let deadline = std::time::Instant::now() + Duration::from_secs(30);
+    let mut caught_up = false;
+    while std::time::Instant::now() < deadline {
+        match pool
+            .fetch_all_follower_read_as(Duration::from_secs(5), "SELECT id FROM rust_fr")
+            .await
+        {
+            Ok(rows) if !rows.is_empty() => {
+                caught_up = true;
+                break;
+            }
+            _ => tokio::time::sleep(Duration::from_millis(500)).await,
+        }
+    }
+    assert!(
+        caught_up,
+        "follower read never caught up to the seeded row within 30s"
+    );
     pool.close().await;
 }
 

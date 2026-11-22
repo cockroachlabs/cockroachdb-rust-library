@@ -37,14 +37,19 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Start CockroachDB
         run: |
+          # Pinned to a released minor (v25.2+ provides the VECTOR type). Vector
+          # search runs brute-force here; the C-SPANN index (v26.2+) is best-effort.
           docker run -d --name crdb -p 26257:26257 \
-            cockroachdb/cockroach:latest start-single-node --insecure
+            cockroachdb/cockroach:latest-v25.2 start-single-node --insecure
           for i in $(seq 1 60); do
             if docker exec crdb ./cockroach sql --insecure -e 'SELECT 1' >/dev/null 2>&1; then
               echo "CockroachDB ready"; break
             fi
             sleep 2
           done
+          # defaultdb normally exists, but create it explicitly to avoid a race
+          # between SQL becoming available and the database being created.
+          docker exec crdb ./cockroach sql --insecure -e 'CREATE DATABASE IF NOT EXISTS defaultdb'
       - name: Run ignored (DB-backed) tests
         env:
           CRDB_URL: postgres://root@localhost:26257/defaultdb?sslmode=disable
