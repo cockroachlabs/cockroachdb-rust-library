@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: build, clippy, unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Build
+        run: cargo build --workspace
+      - name: Unit & doc tests (no database)
+        run: cargo test --workspace
+
+  integration:
+    name: integration tests (live cluster)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Start CockroachDB
+        run: |
+          docker run -d --name crdb -p 26257:26257 \
+            cockroachdb/cockroach:latest start-single-node --insecure
+          for i in $(seq 1 60); do
+            if docker exec crdb ./cockroach sql --insecure -e 'SELECT 1' >/dev/null 2>&1; then
+              echo "CockroachDB ready"; break
+            fi
+            sleep 2
+          done
+      - name: Run ignored (DB-backed) tests
+        env:
+          CRDB_URL: postgres://root@localhost:26257/defaultdb?sslmode=disable
+        run: cargo test --workspace -- --ignored

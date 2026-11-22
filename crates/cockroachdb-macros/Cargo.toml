@@ -1,0 +1,23 @@
+[package]
+name = "cockroachdb-macros"
+description = "Attribute macros for the CockroachDB Rust library: #[transactional] / #[follower_read] — the AOP analogue."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { workspace = true }
+quote = { workspace = true }
+proc-macro2 = { workspace = true }
+
+[dev-dependencies]
+cockroachdb-sqlx = { workspace = true }
+sqlx = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }

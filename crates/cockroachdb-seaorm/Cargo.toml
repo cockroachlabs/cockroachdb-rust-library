@@ -1,0 +1,19 @@
+[package]
+name = "cockroachdb-seaorm"
+description = "SeaORM adapter for CockroachDB: transaction retries on serialization conflicts (40001) around SeaORM transactions."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+
+[dependencies]
+cockroachdb-core = { workspace = true }
+cockroachdb-sqlx = { workspace = true }
+sea-orm = { version = "1", default-features = false, features = ["sqlx-postgres", "runtime-tokio-rustls"] }
+tokio = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }

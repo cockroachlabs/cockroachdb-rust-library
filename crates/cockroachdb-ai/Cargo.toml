@@ -1,0 +1,21 @@
+[package]
+name = "cockroachdb-ai"
+description = "Vector search and RAG retrieval for CockroachDB using the native VECTOR type and C-SPANN index."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+
+[dependencies]
+cockroachdb-core = { workspace = true }
+cockroachdb-sqlx = { workspace = true }
+sqlx = { workspace = true }
+serde_json = { workspace = true }
+async-trait = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }

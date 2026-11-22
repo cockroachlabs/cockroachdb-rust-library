@@ -1,0 +1,7 @@
+# Defines the anonymous sparse registry this workspace publishes to and resolves
+# internal crates from. For local development the `path` entries in the root
+# Cargo.toml take precedence; this entry must still exist so manifests that tag
+# deps with `registry = "cockroachlabs"` parse. Consumers of the published crates
+# add this same block to their own .cargo/config.toml.
+[registries.cockroachlabs]
+index = "sparse+https://cockroachlabs.github.io/cockroachdb-rust-library/registry/"

@@ -1,0 +1,21 @@
+[package]
+name = "cockroachdb-sqlx"
+description = "SQLx adapter for CockroachDB: transaction retries on 40001, follower reads, isolation control, metrics, health."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+
+[dependencies]
+cockroachdb-core = { workspace = true }
+sqlx = { workspace = true }
+tokio = { workspace = true }
+futures = { workspace = true }
+thiserror = { workspace = true }
+async-trait = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "time"] }

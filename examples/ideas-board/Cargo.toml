@@ -1,0 +1,27 @@
+[package]
+name = "ideas-board"
+description = "Reference app for the CockroachDB Rust library — the quickstart demo."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish = false
+
+[[bin]]
+name = "ideas-board"
+path = "src/main.rs"
+
+[dependencies]
+cockroachdb-core = { workspace = true }
+cockroachdb-sqlx = { workspace = true }
+cockroachdb-cdc = { workspace = true }
+cockroachdb-ai = { workspace = true }
+cockroachdb-continuum = { workspace = true }
+cockroachdb-testing = { workspace = true }
+sqlx = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
