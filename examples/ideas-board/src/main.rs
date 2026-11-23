@@ -11,6 +11,7 @@ mod cdc;
 mod followerread;
 mod idea;
 mod metrics;
+mod multiregion;
 mod service;
 
 use cockroachdb_cdc::ChangefeedSpec;
@@ -74,6 +75,11 @@ async fn offline_demos() {
         handler.deletes()
     );
 
+    println!("\nmulti-region setup SQL:");
+    for stmt in multiregion::regional_setup_sql("defaultdb") {
+        println!("  {stmt}");
+    }
+
     let sim = Arc::new(RetrySimulator::serialization_failures(2));
     let report = ConcurrencyRunner::new(8, 5)
         .run(move |_i| {
@@ -134,6 +140,22 @@ async fn live_demo(url: &str) -> Result<(), Box<dyn std::error::Error + Send + S
     println!("top ideas (follower read):");
     for idea in &top {
         println!("  {:>3} votes — {}", idea.votes, idea.title);
+    }
+
+    // Multi-region homing only runs against a REGIONAL BY ROW cluster; opt in
+    // with CRDB_MULTIREGION=1 so the single-node live demo stays green by default.
+    if std::env::var("CRDB_MULTIREGION").is_ok() {
+        for stmt in multiregion::regional_setup_sql("defaultdb") {
+            sqlx::query(&stmt).execute(pool.raw_pool()).await.ok();
+        }
+        let regional = multiregion::RegionalIdeaService::new(pool.clone());
+        let rid = regional
+            .add_in_region("us-east1", "A regional idea")
+            .await?;
+        println!(
+            "homed idea {rid} to region {}",
+            regional.region_of(&rid).await?
+        );
     }
 
     pool.check().await?;
