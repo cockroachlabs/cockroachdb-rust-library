@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["idea_from_after"],"struct":["IdeaChangefeedHandler"]};
