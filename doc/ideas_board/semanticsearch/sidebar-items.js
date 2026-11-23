@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DIMS"],"struct":["HashingEmbedder","SemanticIdeaService"]};
