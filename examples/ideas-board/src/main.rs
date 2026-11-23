@@ -8,12 +8,13 @@
 //!   CRDB_URL=postgres://root@localhost:26257/defaultdb?sslmode=disable cargo run -p ideas-board
 
 mod idea;
+mod metrics;
 mod service;
 
 use cockroachdb_cdc::ChangefeedSpec;
 use cockroachdb_continuum::vcluster::{Priority, VClusterContext};
-use cockroachdb_core::{Config, InMemoryRecorder, Snapshotter};
-use cockroachdb_sqlx::{core, Pool};
+use cockroachdb_core::Config;
+use cockroachdb_sqlx::core;
 use cockroachdb_testing::{ConcurrencyRunner, RetrySimulator};
 use service::IdeaService;
 use std::sync::Arc;
@@ -92,10 +93,8 @@ async fn live_demo(url: &str) -> Result<(), Box<dyn std::error::Error + Send + S
     use cockroachdb_core::HealthChecker;
 
     println!("\n-- live database demo --");
-    let recorder = Arc::new(InMemoryRecorder::new());
-    let pool = Pool::connect(url, Config::builder().region("us-east1").build())
-        .await?
-        .with_metrics(recorder.clone());
+    let (pool, recorder) =
+        metrics::metered_pool(url, Config::builder().region("us-east1").build()).await?;
 
     let svc = IdeaService::new(pool.clone());
     svc.ensure_schema().await?;
@@ -111,14 +110,7 @@ async fn live_demo(url: &str) -> Result<(), Box<dyn std::error::Error + Send + S
     }
 
     pool.check().await?;
-    let snap = recorder.snapshot();
-    println!(
-        "metrics: {} transactions ({} ok), {} retries, {} follower reads",
-        snap.transaction_count,
-        snap.transaction_success_count,
-        snap.retry_count,
-        snap.follower_read_count
-    );
+    metrics::print_metrics(&recorder);
     pool.close().await;
     Ok(())
 }
