@@ -12,6 +12,7 @@ mod followerread;
 mod idea;
 mod metrics;
 mod multiregion;
+mod semanticsearch;
 mod service;
 
 use cockroachdb_cdc::ChangefeedSpec;
@@ -156,6 +157,34 @@ async fn live_demo(url: &str) -> Result<(), Box<dyn std::error::Error + Send + S
             "homed idea {rid} to region {}",
             regional.region_of(&rid).await?
         );
+    }
+
+    // Semantic search needs the VECTOR type (v25.2+); best-effort so an older
+    // local cluster still finishes the demo cleanly.
+    let sem = semanticsearch::SemanticIdeaService::new(pool.clone());
+    match sem.ensure_schema().await {
+        Ok(()) => {
+            sem.store(&[
+                idea::Idea {
+                    id: String::new(),
+                    title: "Add a dark mode theme".into(),
+                    votes: 0,
+                },
+                idea::Idea {
+                    id: String::new(),
+                    title: "Export reports to CSV".into(),
+                    votes: 0,
+                },
+            ])
+            .await
+            .ok();
+            if let Ok(hits) = sem.find_similar("dark mode", 1).await {
+                if let Some(top) = hits.first() {
+                    println!("most similar idea to 'dark mode': {}", top.content);
+                }
+            }
+        }
+        Err(e) => eprintln!("semantic search unavailable: {e}"),
     }
 
     pool.check().await?;
