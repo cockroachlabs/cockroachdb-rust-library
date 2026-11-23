@@ -7,6 +7,7 @@
 //!   cargo run -p ideas-board
 //!   CRDB_URL=postgres://root@localhost:26257/defaultdb?sslmode=disable cargo run -p ideas-board
 
+mod cdc;
 mod followerread;
 mod idea;
 mod metrics;
@@ -48,6 +49,30 @@ async fn offline_demos() {
     for stmt in ctx.apply_statements() {
         println!("  {stmt}");
     }
+
+    // Project a sample changefeed delivery through the CDC handler — no DB needed.
+    use cockroachdb_cdc::{EventHandler, Payload};
+    let handler = cdc::IdeaChangefeedHandler::default();
+    handler
+        .handle(&Payload {
+            after: Some(serde_json::json!({"id": "a", "title": "Dark mode", "votes": 3})),
+            ..Default::default()
+        })
+        .await
+        .ok();
+    handler
+        .handle(&Payload {
+            after: Some(serde_json::Value::Null),
+            before: Some(serde_json::json!({"id": "a"})),
+            ..Default::default()
+        })
+        .await
+        .ok();
+    println!(
+        "\ncdc handler: projected {} idea(s), {} delete(s)",
+        handler.handled().len(),
+        handler.deletes()
+    );
 
     let sim = Arc::new(RetrySimulator::serialization_failures(2));
     let report = ConcurrencyRunner::new(8, 5)
