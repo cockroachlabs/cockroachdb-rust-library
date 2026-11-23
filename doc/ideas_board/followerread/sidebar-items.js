@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["top_ideas_follower"]};
