@@ -121,26 +121,36 @@
 <a href=#121 id=121 data-nosnippet>121</a>            .<span class="kw">await
 <a href=#122 id=122 data-nosnippet>122</a>            </span>.expect(<span class="string">"schema"</span>);
 <a href=#123 id=123 data-nosnippet>123</a>        <span class="kw">for </span>stmt <span class="kw">in </span>regional_setup_sql(<span class="string">"defaultdb"</span>) {
-<a href=#124 id=124 data-nosnippet>124</a>            sqlx::query(<span class="kw-2">&amp;</span>stmt)
-<a href=#125 id=125 data-nosnippet>125</a>                .execute(pool.raw_pool())
-<a href=#126 id=126 data-nosnippet>126</a>                .<span class="kw">await
-<a href=#127 id=127 data-nosnippet>127</a>                </span>.expect(<span class="string">"regional setup"</span>);
-<a href=#128 id=128 data-nosnippet>128</a>        }
-<a href=#129 id=129 data-nosnippet>129</a>
-<a href=#130 id=130 data-nosnippet>130</a>        <span class="kw">let </span>svc = RegionalIdeaService::new(pool.clone());
-<a href=#131 id=131 data-nosnippet>131</a>        <span class="kw">let </span>east = svc
-<a href=#132 id=132 data-nosnippet>132</a>            .add_in_region(<span class="string">"us-east1"</span>, <span class="string">"East idea"</span>)
-<a href=#133 id=133 data-nosnippet>133</a>            .<span class="kw">await
-<a href=#134 id=134 data-nosnippet>134</a>            </span>.expect(<span class="string">"east"</span>);
-<a href=#135 id=135 data-nosnippet>135</a>        <span class="kw">let </span>west = svc
-<a href=#136 id=136 data-nosnippet>136</a>            .add_in_region(<span class="string">"us-west1"</span>, <span class="string">"West idea"</span>)
-<a href=#137 id=137 data-nosnippet>137</a>            .<span class="kw">await
-<a href=#138 id=138 data-nosnippet>138</a>            </span>.expect(<span class="string">"west"</span>);
-<a href=#139 id=139 data-nosnippet>139</a>
-<a href=#140 id=140 data-nosnippet>140</a>        <span class="macro">assert_eq!</span>(svc.region_of(<span class="kw-2">&amp;</span>east).<span class="kw">await</span>.expect(<span class="string">"region"</span>), <span class="string">"us-east1"</span>);
-<a href=#141 id=141 data-nosnippet>141</a>        <span class="macro">assert_eq!</span>(svc.region_of(<span class="kw-2">&amp;</span>west).<span class="kw">await</span>.expect(<span class="string">"region"</span>), <span class="string">"us-west1"</span>);
-<a href=#142 id=142 data-nosnippet>142</a>        pool.close().<span class="kw">await</span>;
-<a href=#143 id=143 data-nosnippet>143</a>    }
-<a href=#144 id=144 data-nosnippet>144</a>    <span class="comment">// end::region-test[]
-<a href=#145 id=145 data-nosnippet>145</a></span>}
+<a href=#124 id=124 data-nosnippet>124</a>            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = sqlx::query(<span class="kw-2">&amp;</span>stmt).execute(pool.raw_pool()).<span class="kw">await </span>{
+<a href=#125 id=125 data-nosnippet>125</a>                <span class="comment">// A single-node cluster started without --locality has no regions,
+<a href=#126 id=126 data-nosnippet>126</a>                // so declaring one fails. Nothing to prove here — skip.
+<a href=#127 id=127 data-nosnippet>127</a>                </span><span class="kw">if </span>is_multiregion_unavailable(<span class="kw-2">&amp;</span>e) {
+<a href=#128 id=128 data-nosnippet>128</a>                    <span class="macro">eprintln!</span>(<span class="string">"skipping: cluster has no regions configured (single-node)"</span>);
+<a href=#129 id=129 data-nosnippet>129</a>                    pool.close().<span class="kw">await</span>;
+<a href=#130 id=130 data-nosnippet>130</a>                    <span class="kw">return</span>;
+<a href=#131 id=131 data-nosnippet>131</a>                }
+<a href=#132 id=132 data-nosnippet>132</a>                <span class="macro">panic!</span>(<span class="string">"regional setup: {e}"</span>);
+<a href=#133 id=133 data-nosnippet>133</a>            }
+<a href=#134 id=134 data-nosnippet>134</a>        }
+<a href=#135 id=135 data-nosnippet>135</a>
+<a href=#136 id=136 data-nosnippet>136</a>        <span class="kw">let </span>svc = RegionalIdeaService::new(pool.clone());
+<a href=#137 id=137 data-nosnippet>137</a>        <span class="kw">let </span>east = svc
+<a href=#138 id=138 data-nosnippet>138</a>            .add_in_region(<span class="string">"us-east1"</span>, <span class="string">"East idea"</span>)
+<a href=#139 id=139 data-nosnippet>139</a>            .<span class="kw">await
+<a href=#140 id=140 data-nosnippet>140</a>            </span>.expect(<span class="string">"east"</span>);
+<a href=#141 id=141 data-nosnippet>141</a>        <span class="kw">let </span>west = svc
+<a href=#142 id=142 data-nosnippet>142</a>            .add_in_region(<span class="string">"us-west1"</span>, <span class="string">"West idea"</span>)
+<a href=#143 id=143 data-nosnippet>143</a>            .<span class="kw">await
+<a href=#144 id=144 data-nosnippet>144</a>            </span>.expect(<span class="string">"west"</span>);
+<a href=#145 id=145 data-nosnippet>145</a>
+<a href=#146 id=146 data-nosnippet>146</a>        <span class="macro">assert_eq!</span>(svc.region_of(<span class="kw-2">&amp;</span>east).<span class="kw">await</span>.expect(<span class="string">"region"</span>), <span class="string">"us-east1"</span>);
+<a href=#147 id=147 data-nosnippet>147</a>        <span class="macro">assert_eq!</span>(svc.region_of(<span class="kw-2">&amp;</span>west).<span class="kw">await</span>.expect(<span class="string">"region"</span>), <span class="string">"us-west1"</span>);
+<a href=#148 id=148 data-nosnippet>148</a>        pool.close().<span class="kw">await</span>;
+<a href=#149 id=149 data-nosnippet>149</a>    }
+<a href=#150 id=150 data-nosnippet>150</a>
+<a href=#151 id=151 data-nosnippet>151</a>    <span class="kw">fn </span>is_multiregion_unavailable(e: <span class="kw-2">&amp;</span>sqlx::Error) -&gt; bool {
+<a href=#152 id=152 data-nosnippet>152</a>        e.to_string().to_lowercase().contains(<span class="string">"region"</span>)
+<a href=#153 id=153 data-nosnippet>153</a>    }
+<a href=#154 id=154 data-nosnippet>154</a>    <span class="comment">// end::region-test[]
+<a href=#155 id=155 data-nosnippet>155</a></span>}
 </code></pre></div></section></main></body></html>
