@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["regional_setup_sql"],"struct":["RegionalIdeaService"]};
