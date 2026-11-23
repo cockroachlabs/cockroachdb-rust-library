@@ -7,6 +7,7 @@
 //!   cargo run -p ideas-board
 //!   CRDB_URL=postgres://root@localhost:26257/defaultdb?sslmode=disable cargo run -p ideas-board
 
+mod followerread;
 mod idea;
 mod metrics;
 mod service;
@@ -18,6 +19,7 @@ use cockroachdb_sqlx::core;
 use cockroachdb_testing::{ConcurrencyRunner, RetrySimulator};
 use service::IdeaService;
 use std::sync::Arc;
+use std::time::Duration;
 
 #[tokio::main(flavor = "multi_thread")]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
@@ -103,7 +105,7 @@ async fn live_demo(url: &str) -> Result<(), Box<dyn std::error::Error + Send + S
     let landed = run_concurrent_upvotes(&svc, &id, 3, 20).await;
     println!("fired 60 concurrent upvotes, {landed} landed");
 
-    let top = svc.top_ideas(5).await?;
+    let top = followerread::top_ideas_follower(&pool, Duration::from_secs(5), 5).await?;
     println!("top ideas (follower read):");
     for idea in &top {
         println!("  {:>3} votes — {}", idea.votes, idea.title);

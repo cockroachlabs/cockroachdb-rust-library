@@ -2,10 +2,8 @@
 //! loses votes under contention, and the one-method fix that absorbs the
 //! resulting `40001` serialization conflicts.
 
-use crate::idea::Idea;
 use cockroachdb_sqlx::Pool;
 use sqlx::Row;
-use std::time::Duration;
 
 /// Ideas-board service over a CockroachDB pool.
 #[derive(Clone)]
@@ -100,31 +98,6 @@ impl IdeaService {
             .await
     }
     // end::retry[]
-
-    /// Top ideas by votes, served from a follower read (slightly stale, lower
-    /// latency). Used by the follower-reads guide.
-    pub async fn top_ideas(&self, limit: i64) -> Result<Vec<Idea>, sqlx::Error> {
-        self.pool
-            .follower_read_tx(Duration::from_secs(5), move |conn| {
-                Box::pin(async move {
-                    let rows = sqlx::query(
-                        "SELECT id::text AS id, title, votes FROM ideas ORDER BY votes DESC LIMIT $1",
-                    )
-                    .bind(limit)
-                    .fetch_all(&mut *conn)
-                    .await?;
-                    Ok(rows
-                        .iter()
-                        .map(|r| Idea {
-                            id: r.get("id"),
-                            title: r.get("title"),
-                            votes: r.get("votes"),
-                        })
-                        .collect())
-                })
-            })
-            .await
-    }
 }
 
 #[cfg(test)]
