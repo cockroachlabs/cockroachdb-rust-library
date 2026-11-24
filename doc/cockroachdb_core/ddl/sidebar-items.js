@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["add_region","ident","set_locality_global","set_locality_regional_by_row","set_locality_regional_by_table","set_primary_region"]};
+window.SIDEBAR_ITEMS = {"fn":["add_region","ident","set_locality_global","set_locality_regional_by_row","set_locality_regional_by_row_as","set_locality_regional_by_table","set_primary_region"]};

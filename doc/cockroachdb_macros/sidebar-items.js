@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"attr":["follower_read","transactional"]};
+window.SIDEBAR_ITEMS = {"attr":["follower_read","transactional"],"derive":["CrdbLocality"]};

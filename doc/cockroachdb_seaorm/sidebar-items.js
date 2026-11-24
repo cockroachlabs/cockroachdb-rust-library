@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["connect","execute_tx","is_retryable","retry_loop"]};
+window.SIDEBAR_ITEMS = {"enum":["DeclaredLocality","Kind","Mode"],"fn":["connect","execute_tx","is_retryable","retry_loop"],"mod":["multiregion"],"struct":["MultiregionReport","MultiregionTable"],"trait":["CrdbLocality"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DeclaredLocality","Kind","Mode"],"fn":["describe","describe_plain","verify_multiregion"],"struct":["MultiregionReport","MultiregionTable"],"trait":["CrdbLocality"]};

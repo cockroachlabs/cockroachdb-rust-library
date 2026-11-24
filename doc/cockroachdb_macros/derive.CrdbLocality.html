@@ -1,0 +1,32 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Declares a SeaORM entity’s multi-region locality, the analogue of Spring’s `@GlobalTable` / `@RegionalByRow` / `@CrdbRegion`."><title>CrdbLocality in cockroachdb_macros - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-203241e4.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="cockroachdb_macros" data-themes="" data-resource-suffix="" data-rustdoc-version="1.100.0 (0ef1bc386 2026-11-09)" data-channel="1.100.0" data-search-js="search-b167f383.js" data-stringdex-js="stringdex-b5109af9.js" data-settings-js="settings-170eb4bf.js" ><script src="../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-1814ead3.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-9f56287d.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc derive"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">CrdbLocality</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../cockroachdb_macros/index.html">cockroachdb_<wbr>macros</a><span class="version">0.2.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">cockroachdb_macros</a></div><h1>Derive Macro <span class="derive">Crdb<wbr>Locality</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/cockroachdb_macros/lib.rs.html#164-170">Source</a> </span></div><pre class="rust item-decl"><code>#[derive(CrdbLocality)]
+{
+    <span class="comment">// Attributes available to this derive:</span>
+    #[crdb]
+}
+</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Declares a SeaORM entity’s multi-region locality, the analogue of Spring’s
+<code>@GlobalTable</code> / <code>@RegionalByRow</code> / <code>@CrdbRegion</code>.</p>
+<p>Put it on the entity’s <code>Model</code> struct alongside <code>DeriveEntityModel</code>; it generates
+<code>impl cockroachdb_core::multiregion::CrdbLocality for Entity</code>, which the SeaORM
+adapter’s <code>verify_multiregion</code> check diffs against the live table. Requires a
+<code>cockroachdb-core</code> dependency (the generated code names it by path).</p>
+<p>Container attribute (exactly one required):</p>
+<ul>
+<li><code>#[crdb(global)]</code> — the table should be <code>GLOBAL</code>.</li>
+<li><code>#[crdb(regional_by_row)]</code> — the table should be <code>REGIONAL BY ROW</code>.</li>
+</ul>
+<p>Field attribute (only with <code>regional_by_row</code>):</p>
+<ul>
+<li><code>#[crdb(region)]</code> — marks the region column. The declared column name is the
+field’s name.</li>
+</ul>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="attr">#[derive(Clone, Debug, PartialEq, DeriveEntityModel, CrdbLocality)]
+#[sea_orm(table_name = <span class="string">"ideas"</span>)]
+#[crdb(regional_by_row)]
+</span><span class="kw">pub struct </span>Model {
+    <span class="attr">#[sea_orm(primary_key)]
+    </span><span class="kw">pub </span>id: i64,
+    <span class="kw">pub </span>title: String,
+    <span class="attr">#[crdb(region)]
+    </span><span class="kw">pub </span>region: String,
+}</code></pre></div></div></details></section></div></main></body></html>
