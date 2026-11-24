@@ -2,7 +2,7 @@
 <p>Mirrors the Go library’s <code>crdbtest</code> package:</p>
 <ul>
 <li><a href="struct.FakeDbError.html" title="struct cockroachdb_testing::FakeDbError"><code>FakeDbError</code></a> — an error carrying a chosen SQLSTATE, implementing
-[<code>cockroachdb_core::SqlState</code>] so you can test retry classification.</li>
+<a href="../cockroachdb_core/error/trait.SqlState.html" title="trait cockroachdb_core::error::SqlState"><code>cockroachdb_core::SqlState</code></a> so you can test retry classification.</li>
 <li><a href="struct.RetrySimulator.html" title="struct cockroachdb_testing::RetrySimulator"><code>RetrySimulator</code></a> — fails with a retryable error a set number of times,
 then succeeds, to exercise retry loops deterministically.</li>
 <li><a href="struct.ConcurrencyRunner.html" title="struct cockroachdb_testing::ConcurrencyRunner"><code>ConcurrencyRunner</code></a> — runs an async operation across many concurrent
