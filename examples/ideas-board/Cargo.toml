@@ -16,6 +16,8 @@ path = "src/main.rs"
 [dependencies]
 cockroachdb-core = { workspace = true }
 cockroachdb-sqlx = { workspace = true }
+cockroachdb-seaorm = { workspace = true }
+cockroachdb-macros = { workspace = true }
 cockroachdb-cdc = { workspace = true }
 cockroachdb-ai = { workspace = true }
 cockroachdb-continuum = { workspace = true }
@@ -23,6 +25,7 @@ cockroachdb-testing = { workspace = true }
 async-trait = { workspace = true }
 serde_json = { workspace = true }
 sqlx = { workspace = true }
+sea-orm = { version = "1", default-features = false, features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"] }
 tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
 
 [dev-dependencies]

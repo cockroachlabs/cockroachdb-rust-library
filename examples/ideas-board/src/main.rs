@@ -11,6 +11,7 @@ mod cdc;
 mod followerread;
 mod idea;
 mod metrics;
+mod mrcheck;
 mod multiregion;
 mod semanticsearch;
 mod service;
@@ -136,6 +137,12 @@ async fn live_demo(url: &str) -> Result<(), Box<dyn std::error::Error + Send + S
 
     let landed = run_concurrent_upvotes(&svc, &id, 3, 20).await;
     println!("fired 60 concurrent upvotes, {landed} landed");
+
+    // Multi-region annotation check (SeaORM path): declare entity locality with
+    // #[derive(CrdbLocality)] and verify it against the live schema at startup.
+    // On a single-node cluster warn mode logs "not multi-region" and continues.
+    let seaorm_db = cockroachdb_seaorm::connect(url, &Config::default()).await?;
+    mrcheck::verify(&seaorm_db).await?;
 
     let top = followerread::top_ideas_follower(&pool, Duration::from_secs(5), 5).await?;
     println!("top ideas (follower read):");
