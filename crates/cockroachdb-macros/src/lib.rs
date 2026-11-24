@@ -10,7 +10,7 @@
 
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, Ident, ItemFn};
+use syn::{parse_macro_input, Data, DeriveInput, Fields, Ident, ItemFn};
 
 /// Wraps an `async fn` body in a retrying transaction.
 ///
@@ -130,4 +130,139 @@ impl syn::parse::Parse for MacroArgs {
 
         Ok(Self { pool, staleness })
     }
+}
+
+/// Declares a SeaORM entity's multi-region locality, the analogue of Spring's
+/// `@GlobalTable` / `@RegionalByRow` / `@CrdbRegion`.
+///
+/// Put it on the entity's `Model` struct alongside `DeriveEntityModel`; it generates
+/// `impl cockroachdb_core::multiregion::CrdbLocality for Entity`, which the SeaORM
+/// adapter's `verify_multiregion` check diffs against the live table. Requires a
+/// `cockroachdb-core` dependency (the generated code names it by path).
+///
+/// Container attribute (exactly one required):
+/// - `#[crdb(global)]` — the table should be `GLOBAL`.
+/// - `#[crdb(regional_by_row)]` — the table should be `REGIONAL BY ROW`.
+///
+/// Field attribute (only with `regional_by_row`):
+/// - `#[crdb(region)]` — marks the region column. The declared column name is the
+///   field's name.
+///
+/// ```ignore
+/// #[derive(Clone, Debug, PartialEq, DeriveEntityModel, CrdbLocality)]
+/// #[sea_orm(table_name = "ideas")]
+/// #[crdb(regional_by_row)]
+/// pub struct Model {
+///     #[sea_orm(primary_key)]
+///     pub id: i64,
+///     pub title: String,
+///     #[crdb(region)]
+///     pub region: String,
+/// }
+/// ```
+#[proc_macro_derive(CrdbLocality, attributes(crdb))]
+pub fn derive_crdb_locality(item: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(item as DeriveInput);
+    match expand_locality(&input) {
+        Ok(tokens) => tokens.into(),
+        Err(err) => err.to_compile_error().into(),
+    }
+}
+
+fn expand_locality(input: &DeriveInput) -> syn::Result<proc_macro2::TokenStream> {
+    let mut global = false;
+    let mut regional_by_row = false;
+    for attr in &input.attrs {
+        if attr.path().is_ident("crdb") {
+            attr.parse_nested_meta(|meta| {
+                if meta.path.is_ident("global") {
+                    global = true;
+                    Ok(())
+                } else if meta.path.is_ident("regional_by_row") {
+                    regional_by_row = true;
+                    Ok(())
+                } else {
+                    Err(meta.error("expected `global` or `regional_by_row`"))
+                }
+            })?;
+        }
+    }
+
+    if global && regional_by_row {
+        return Err(syn::Error::new_spanned(
+            &input.ident,
+            "a type cannot be both #[crdb(global)] and #[crdb(regional_by_row)]",
+        ));
+    }
+    if !global && !regional_by_row {
+        return Err(syn::Error::new_spanned(
+            &input.ident,
+            "#[derive(CrdbLocality)] needs #[crdb(global)] or #[crdb(regional_by_row)]",
+        ));
+    }
+
+    let Data::Struct(data) = &input.data else {
+        return Err(syn::Error::new_spanned(
+            &input.ident,
+            "#[derive(CrdbLocality)] can only be applied to a struct",
+        ));
+    };
+
+    // ponytail: the region column is taken from the field name — SeaORM's default
+    // column name. A `#[sea_orm(column_name = "...")]` override on the region field
+    // is not read; rename the field to match if you need a different column.
+    let mut region_column: Option<String> = None;
+    if let Fields::Named(named) = &data.fields {
+        for field in &named.named {
+            let mut is_region = false;
+            for attr in &field.attrs {
+                if attr.path().is_ident("crdb") {
+                    attr.parse_nested_meta(|meta| {
+                        if meta.path.is_ident("region") {
+                            is_region = true;
+                            Ok(())
+                        } else {
+                            Err(meta.error("expected `region`"))
+                        }
+                    })?;
+                }
+            }
+            if is_region {
+                if !regional_by_row {
+                    return Err(syn::Error::new_spanned(
+                        field,
+                        "#[crdb(region)] is only valid with #[crdb(regional_by_row)]",
+                    ));
+                }
+                if region_column.is_some() {
+                    return Err(syn::Error::new_spanned(
+                        field,
+                        "only one field may be #[crdb(region)]",
+                    ));
+                }
+                region_column = Some(field.ident.as_ref().unwrap().to_string());
+            }
+        }
+    }
+
+    let body = if global {
+        quote! { ::cockroachdb_core::multiregion::DeclaredLocality::Global }
+    } else {
+        let column = match region_column {
+            Some(c) => quote! { ::core::option::Option::Some(::std::string::String::from(#c)) },
+            None => quote! { ::core::option::Option::None },
+        };
+        quote! {
+            ::cockroachdb_core::multiregion::DeclaredLocality::RegionalByRow { region_column: #column }
+        }
+    };
+
+    Ok(quote! {
+        #[automatically_derived]
+        impl ::cockroachdb_core::multiregion::CrdbLocality for Entity {
+            fn crdb_locality() -> ::cockroachdb_core::multiregion::DeclaredLocality {
+                #body
+            }
+        }
+    })
 }

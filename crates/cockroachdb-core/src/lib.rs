@@ -18,6 +18,7 @@ pub mod health;
 pub mod isolation;
 pub mod metrics;
 pub mod middleware;
+pub mod multiregion;
 pub mod region;
 pub mod retry;
 
@@ -34,5 +35,9 @@ pub use follower::{
 pub use health::{Health, HealthChecker, HealthStatus};
 pub use isolation::IsolationLevel;
 pub use metrics::{InMemoryRecorder, MetricsRecorder, Snapshot, Snapshotter};
+pub use multiregion::{
+    evaluate, fails_startup, CrdbLocality, DeclaredLocality, Kind, Mode, MultiregionReport,
+    MultiregionState, MultiregionTable, TableInfo, TableName,
+};
 pub use region::{RegionContext, RegionResolver, StaticRegionResolver, CRDB_REGION_COLUMN};
 pub use retry::RetryPolicy;
