@@ -37,6 +37,18 @@ pub fn set_locality_regional_by_row(table: &str) -> String {
     format!("ALTER TABLE {} SET LOCALITY REGIONAL BY ROW", ident(table))
 }
 
+/// `ALTER TABLE <table> SET LOCALITY REGIONAL BY ROW AS <region_column>`.
+///
+/// For a REGIONAL BY ROW table homed by an explicit column rather than the implicit
+/// `crdb_region`.
+pub fn set_locality_regional_by_row_as(table: &str, region_column: &str) -> String {
+    format!(
+        "ALTER TABLE {} SET LOCALITY REGIONAL BY ROW AS {}",
+        ident(table),
+        ident(region_column)
+    )
+}
+
 /// `ALTER TABLE <table> SET LOCALITY GLOBAL`.
 pub fn set_locality_global(table: &str) -> String {
     format!("ALTER TABLE {} SET LOCALITY GLOBAL", ident(table))
@@ -78,6 +90,10 @@ mod tests {
         assert_eq!(
             set_locality_regional_by_row("accounts"),
             "ALTER TABLE \"accounts\" SET LOCALITY REGIONAL BY ROW"
+        );
+        assert_eq!(
+            set_locality_regional_by_row_as("accounts", "region"),
+            "ALTER TABLE \"accounts\" SET LOCALITY REGIONAL BY ROW AS \"region\""
         );
         assert_eq!(
             set_locality_global("ref_data"),

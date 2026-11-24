@@ -16,4 +16,6 @@ sea-orm = { version = "1", default-features = false, features = ["sqlx-postgres"
 tokio = { workspace = true }
 
 [dev-dependencies]
+cockroachdb-macros = { workspace = true }
+sea-orm = { version = "1", default-features = false, features = ["macros"] }
 tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }

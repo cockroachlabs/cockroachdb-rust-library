@@ -27,7 +27,13 @@ use sea_orm::{
 use std::future::Future;
 use std::pin::Pin;
 
+pub mod multiregion;
+
 pub use cockroachdb_core as core;
+pub use multiregion::{
+    describe, describe_plain, verify_multiregion, CrdbLocality, DeclaredLocality, Kind, Mode,
+    MultiregionReport, MultiregionTable,
+};
 
 /// Extracts the Postgres `SQLSTATE` from a SeaORM error, if present.
 fn sql_state(err: &DbErr) -> Option<String> {
