@@ -50,10 +50,16 @@ cockroachdb-sqlx = { version = "0.2", registry = "cockroachlabs" }
 ## AI agents
 
 Using a coding agent in an app that depends on this library? See the consumer
-guide [`docs/agents/AGENTS.md`](docs/agents/AGENTS.md) — it's also bundled inside
-the published `cockroachdb-sqlx` crate. It explains what the library already
-handles (40001 retries, follower reads, region homing, CDC, Continuum) so the
-agent doesn't rebuild it.
+guide [`docs/agents/AGENTS.md`](docs/agents/AGENTS.md). It explains what the
+library already handles (40001 retries, follower reads, region homing, CDC,
+Continuum) so the agent doesn't rebuild it, and links the CockroachDB docs an
+agent should read.
+
+It lives in **two places**: bundled inside the published `cockroachdb-sqlx`
+crate (matching the version you depend on), and served from the site at
+<https://cockroachlabs.github.io/cockroachdb-rust-library/agents/AGENTS.md>
+(latest `main`, also indexed by `/llms.txt`). If they disagree, trust the
+crate's copy for the version you have.
 
 ## License
 
