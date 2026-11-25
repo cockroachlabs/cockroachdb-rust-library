@@ -8,6 +8,10 @@ license.workspace = true
 repository.workspace = true
 homepage.workspace = true
 authors.workspace = true
+# `include` overrides cargo's defaults, so src/** must be listed explicitly.
+# docs/agents/AGENTS.md is the consumer guide baked into the published .crate
+# (kept identical to the repo-root copy at docs/agents/AGENTS.md).
+include = ["src/**/*", "docs/agents/AGENTS.md"]
 
 [dependencies]
 cockroachdb-core = { workspace = true }

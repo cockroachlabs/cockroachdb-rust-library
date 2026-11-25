@@ -47,6 +47,14 @@ index = "sparse+https://cockroachlabs.github.io/cockroachdb-rust-library/registr
 cockroachdb-sqlx = { version = "0.1", registry = "cockroachlabs" }
 ```
 
+## AI agents
+
+Using a coding agent in an app that depends on this library? See the consumer
+guide [`docs/agents/AGENTS.md`](docs/agents/AGENTS.md) — it's also bundled inside
+the published `cockroachdb-sqlx` crate. It explains what the library already
+handles (40001 retries, follower reads, region homing, CDC, Continuum) so the
+agent doesn't rebuild it.
+
 ## License
 
 Apache-2.0. See [LICENSE](LICENSE).
