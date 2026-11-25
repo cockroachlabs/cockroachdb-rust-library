@@ -53,3 +53,49 @@ connection string, retry max attempts, follower-read `staleness`, region. Force
 
 Use `cockroachdb-testing` — test harness, concurrency runner, retry/follower
 simulators (no live cluster required).
+
+## Learn CockroachDB fundamentals
+
+The library handles the Rust side; these CockroachDB docs explain the database
+underneath. Each link points at the Markdown version of the page (easier for an
+agent to read); drop the `.md` for the HTML page. Every docs page has one, and
+<https://docs.cockroachlabs.com/llms.txt> indexes the whole documentation site.
+
+**Start here**
+
+- [Developer Basics](https://docs.cockroachlabs.com/docs/stable/developer-basics.md): what's different about building on CockroachDB.
+- [PostgreSQL Compatibility](https://docs.cockroachlabs.com/docs/stable/postgresql-compatibility.md): CockroachDB speaks the PostgreSQL wire protocol (SQLx's `postgres` driver connects to it), with some differences.
+- [Connection Pooling](https://docs.cockroachlabs.com/docs/stable/connection-pooling.md): sizing a `sqlx::PgPool`.
+- [Common Errors and Solutions](https://docs.cockroachlabs.com/docs/stable/common-errors.md)
+
+**Transactions and contention**
+
+- [Transactions](https://docs.cockroachlabs.com/docs/stable/transactions.md): SERIALIZABLE by default, and why clients see retry errors.
+- [Transaction Retry Error Reference](https://docs.cockroachlabs.com/docs/stable/transaction-retry-error-reference.md): what each `40001` (`RETRY_SERIALIZABLE`, `RETRY_WRITE_TOO_OLD`, ...) means. `execute_tx` retries them; this tells you why they happen.
+- [Reduce transaction contention](https://docs.cockroachlabs.com/docs/stable/performance-best-practices-overview.md#reduce-transaction-contention): keep transactions small, limit the rows they touch, use `SELECT ... FOR UPDATE` for read-then-write, `UPSERT` whole rows, use historical reads where staleness is fine.
+- [Understand Hotspots](https://docs.cockroachlabs.com/docs/stable/understand-hotspots.md)
+- [Performance Tuning Recipes](https://docs.cockroachlabs.com/docs/stable/performance-recipes.md)
+- [`SELECT FOR UPDATE`](https://docs.cockroachlabs.com/docs/stable/select-for-update.md)
+- [Read Committed Transactions](https://docs.cockroachlabs.com/docs/stable/read-committed.md): an alternative isolation level, with trade-offs. Don't switch to it just to avoid retries — it hides `40001`.
+
+**Schema design**
+
+- [Database Schemas](https://docs.cockroachlabs.com/docs/stable/schema-design-overview.md): design and change schemas with a migration tool rather than through the ORM.
+- [Unique ID best practices](https://docs.cockroachlabs.com/docs/stable/performance-best-practices-overview.md#unique-id-best-practices): prefer `UUID` keys (`gen_random_uuid()`) over sequences or auto-increment, which create hotspots.
+- [`UUID`](https://docs.cockroachlabs.com/docs/stable/uuid.md) and [Hash-sharded Indexes](https://docs.cockroachlabs.com/docs/stable/hash-sharded-indexes.md), for when an index must be on a sequential column.
+- [Online Schema Changes](https://docs.cockroachlabs.com/docs/stable/online-schema-changes.md)
+
+**Multi-region**
+
+- [Multi-Region Capabilities Overview](https://docs.cockroachlabs.com/docs/stable/multiregion-overview.md)
+- [Table Localities](https://docs.cockroachlabs.com/docs/stable/table-localities.md): `REGIONAL BY TABLE`, `REGIONAL BY ROW` and `GLOBAL`, which `#[crdb(regional_by_row)]` and `#[crdb(global)]` map to.
+- [How to Choose a Multi-Region Configuration](https://docs.cockroachlabs.com/docs/stable/choosing-a-multi-region-configuration.md)
+- [Follower Reads](https://docs.cockroachlabs.com/docs/stable/follower-reads.md) and [`AS OF SYSTEM TIME`](https://docs.cockroachlabs.com/docs/stable/as-of-system-time.md), behind `follower_read_tx`.
+
+**Change data capture**
+
+- [`CREATE CHANGEFEED`](https://docs.cockroachlabs.com/docs/stable/create-changefeed.md) and [Changefeed Sinks](https://docs.cockroachlabs.com/docs/stable/changefeed-sinks.md) (the webhook sink is what `cockroachdb-cdc` receives).
+
+**Vector search**
+
+- [`VECTOR`](https://docs.cockroachlabs.com/docs/stable/vector.md) and [Vector Indexes](https://docs.cockroachlabs.com/docs/stable/vector-indexes.md)

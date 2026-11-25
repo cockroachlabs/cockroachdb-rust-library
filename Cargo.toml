@@ -21,7 +21,7 @@ members = [
 #   "crates/cockroachdb-testing",
 
 [workspace.package]
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 rust-version = "1.75"
 license = "Apache-2.0"
@@ -43,11 +43,11 @@ serde_json = "1"
 
 # Internal crates: `path` is used for local dev/build; `version` + `registry`
 # are what `cargo package` records so consumers resolve them from the Pages feed.
-cockroachdb-core = { path = "crates/cockroachdb-core", version = "0.2.1", registry = "cockroachlabs" }
-cockroachdb-sqlx = { path = "crates/cockroachdb-sqlx", version = "0.2.1", registry = "cockroachlabs" }
-cockroachdb-macros = { path = "crates/cockroachdb-macros", version = "0.2.1", registry = "cockroachlabs" }
-cockroachdb-cdc = { path = "crates/cockroachdb-cdc", version = "0.2.1", registry = "cockroachlabs" }
-cockroachdb-ai = { path = "crates/cockroachdb-ai", version = "0.2.1", registry = "cockroachlabs" }
-cockroachdb-continuum = { path = "crates/cockroachdb-continuum", version = "0.2.1", registry = "cockroachlabs" }
-cockroachdb-seaorm = { path = "crates/cockroachdb-seaorm", version = "0.2.1", registry = "cockroachlabs" }
-cockroachdb-testing = { path = "crates/cockroachdb-testing", version = "0.2.1", registry = "cockroachlabs" }
+cockroachdb-core = { path = "crates/cockroachdb-core", version = "0.2.2", registry = "cockroachlabs" }
+cockroachdb-sqlx = { path = "crates/cockroachdb-sqlx", version = "0.2.2", registry = "cockroachlabs" }
+cockroachdb-macros = { path = "crates/cockroachdb-macros", version = "0.2.2", registry = "cockroachlabs" }
+cockroachdb-cdc = { path = "crates/cockroachdb-cdc", version = "0.2.2", registry = "cockroachlabs" }
+cockroachdb-ai = { path = "crates/cockroachdb-ai", version = "0.2.2", registry = "cockroachlabs" }
+cockroachdb-continuum = { path = "crates/cockroachdb-continuum", version = "0.2.2", registry = "cockroachlabs" }
+cockroachdb-seaorm = { path = "crates/cockroachdb-seaorm", version = "0.2.2", registry = "cockroachlabs" }
+cockroachdb-testing = { path = "crates/cockroachdb-testing", version = "0.2.2", registry = "cockroachlabs" }
