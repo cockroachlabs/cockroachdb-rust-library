@@ -44,7 +44,7 @@ index = "sparse+https://cockroachlabs.github.io/cockroachdb-rust-library/registr
 ```toml
 # Cargo.toml
 [dependencies]
-cockroachdb-sqlx = { version = "0.1", registry = "cockroachlabs" }
+cockroachdb-sqlx = { version = "0.2", registry = "cockroachlabs" }
 ```
 
 ## AI agents
