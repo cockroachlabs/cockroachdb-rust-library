@@ -1,0 +1,5 @@
+# cockroachdb-rust-library
+
+Consumer guide for coding agents working in a Rust app that depends on
+this library (what it already handles, which symbol for each job):
+https://cockroachlabs.github.io/cockroachdb-rust-library/agents/AGENTS.md
